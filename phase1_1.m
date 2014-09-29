@@ -19,6 +19,7 @@ E_Na = 115; %Nernst Voltage of NA+
 E_L = 10.6; %Nernst Voltage of Leakage
 C_m = 1; %Membrane Capacitance
 
+
 %Initial Condition & Gating Variables (Provided in the Modeling Phase1 document)
 V_m = 0;    %initial voltage set to zero
 
@@ -32,7 +33,8 @@ beta_h = 1/ (exp((30-V_m)/10) +1); %probability of beta_h
 
 m(1) = alpha_m / (alpha_m + beta_m); %probability of channel open and let ions flow for m
 n(1) = alpha_n / (alpha_n + beta_n);%probability of channel open and let ions flow for n
-h(1) = alpha_h / (alpha_h + beta_h);%probability of channel open and let ions flow for h
+h(1) = alpha_h / (alpha_h + beta_h);%probability of channel inactivation
+
 
 for i = 1:length(t)-1 %For indexing until 10000, one has to substract 1.
     %for loop is used to take information from previous timestep and also
@@ -48,10 +50,10 @@ for i = 1:length(t)-1 %For indexing until 10000, one has to substract 1.
     beta_h(i) = 1/ (exp((30-V_m(i))/10) +1);
     
     %Currents (Provided in the Modeling Phase1 document)
-    I_Na = (m(i)^3 * gbar_Na * h(i) * (V_m(i) - E_Na)); %Current for Na+ ions
-    I_K = (n(i)^4 * gbar_K * (V_m(i) - E_K));%Current for K+ ions
+    I_Na = m(i)^3 * gbar_Na * h(i) * (V_m(i) - E_Na) ; %Current for Na+ ions
+    I_K = (n(i)^4 * gbar_K * (V_m(i) - E_K)) ;%Current for K+ ions
     I_L = gbar_L * (V_m(i) - E_L);%Current for leakage
-    I_ion = I(i) - I_K - I_Na - I_L;%Current for ions
+    I_ion = I(i) - I_K - I_Na - I_L ;%Current for ions
     
     %First order approximation using Euler's Method
     V_m(i+1) = V_m(i) + dT * I_ion/C_m;
@@ -84,7 +86,7 @@ hold on %Allow to hold two distinguished lines on the same graph.
 P2 = plot(t, gbar_Na * (m.^3).*h, 'r'); %Plot Na+ conductance over duration of time
 legend([P1,P2], 'gK', 'gNa') % Boxed fonts representing each line of graph
 xlabel('Time (ms)')   %X-axis with Time in miliseconds
-ylabel('Conductance (S/cm^2)') %Y-axis with Conductance in S/cm^2
+ylabel('Conductance (mS/cm^2)') %Y-axis with Conductance in S/cm^2
 title ('gK and gNa')  % Title of the graph
 
 

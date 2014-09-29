@@ -8,11 +8,13 @@ t= 0:dT:simulT;  %Starting from 0 to 100 at timestep of dT
 I = zeros(1, length(t))
 %gives step function at I
 for j = 1:50:(length(t)-1)./2
-    I(1, (2.*j)-1:(2.*j)+50) = 5  %indexing- I as a step function: certain intervals
+    I(1, (2.*j)-1:(2.*j)+50) = 5.*pi.*(1e-8).*(1e3)  %indexing- I as a step function: certain intervals
     %with 5 and the rest of the regions with 0 impulse injected. 
     %Sarted with an impulse of 5 at time 0, lasting for 0.5 miliseconds and come back to 0.
 end
-
+%the given unit of microAmp/cm^2 is converted to microAmps by multiplying
+%the given value by cell surface area (sphere: 4*pi*R^2) with diameter of 1 micron^2 (Diameter
+%of human nerve cell as referenced by Wikipedia)
 
 %Parameter Constants (Provided in the Modeling Phase1 document)
 gbar_K = 36;   %maximum Conductance of K+
@@ -36,7 +38,7 @@ beta_h = 1/ (exp((30-V_m)/10) +1); %probability of beta_h
 
 m(1) = alpha_m / (alpha_m + beta_m); %probability of channel open and let ions flow for m
 n(1) = alpha_n / (alpha_n + beta_n);%probability of channel open and let ions flow for n
-h(1) = alpha_h / (alpha_h + beta_h);%probability of channel open and let ions flow for h
+h(1) = alpha_h / (alpha_h + beta_h);%probability of channel inactivation
 
 for i = 1:length(t)-1 %For indexing until 10000, one has to substract 1.
     %for loop is used to take information from previous timestep and also
@@ -88,5 +90,5 @@ hold on %Allow to hold two distinguished lines on the same graph.
 P2 = plot(t, gbar_Na * (m.^3).*h, 'r'); %Plot Na+ conductance over duration of time
 legend([P1,P2], 'gK', 'gNa') % Boxed fonts representing each line of graph
 xlabel('Time (ms)')   %X-axis with Time in miliseconds
-ylabel('Conductance (S/cm^2)') %Y-axis with Conductance in S/cm^2
+ylabel('Conductance (mS/cm^2)') %Y-axis with Conductance in S/cm^2
 title ('gK and gNa')  % Title of the graph
